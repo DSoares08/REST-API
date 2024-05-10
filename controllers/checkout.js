@@ -1,6 +1,6 @@
 import stripe from 'stripe';
 
-const stripeInstance = (process.env.SECRET_KEY);
+const stripeInstance = ('sk_test_SECRET_KEY');
 
 // Create a Stripe Checkout Session to create a customer and subscribe
 export const checkout = async (req, res) => {

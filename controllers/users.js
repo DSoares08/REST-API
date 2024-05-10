@@ -2,7 +2,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 import stripe from 'stripe';
 
-const stripeInstance = stripe(process.env.SECRET_KEY);
+const stripeInstance = stripe('sk_test_SECRET_KEY');
 
 let users = [];
 

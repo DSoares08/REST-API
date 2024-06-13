@@ -1,10 +1,10 @@
 import stripe from 'stripe';
 
-const stripeInstance = ('sk_test_SECRET_KEY');
+const stripeInstance = stripe('sk_test_51M1dZpBAV94IwLh6qKxJzNwwvbSDaPKxzqP8Kj9weNGMCRuj1y0S0giQWVeMJGJ9hZo71y7NWaTqJU8GPlRrMpI200fFWrWKQg');
 
 // Create a Stripe Checkout Session to create a customer and subscribe
 export const checkout = async (req, res) => {
-  const session = await stripe.checkout.sessions.create({
+    const session = await stripeInstance.checkout.sessions.create({
     mode: 'subscription',
     payment_method_types: ['card'],
     line_items: [

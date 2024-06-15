@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import express from 'express';
 import bodyParser from 'body-parser';
 
@@ -7,6 +8,8 @@ import webhookRoute from './routes/webhook.js';
 
 const app = express();
 const PORT = 5000;
+
+app.use(express.raw({ type: 'application/json' }));
 
 app.use(bodyParser.json());
 

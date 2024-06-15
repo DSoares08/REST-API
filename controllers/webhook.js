@@ -1,13 +1,13 @@
 import stripe from 'stripe';
 
-const stripeInstance = stripe('sk_test_51M1dZpBAV94IwLh6qKxJzNwwvbSDaPKxzqP8Kj9weNGMCRuj1y0S0giQWVeMJGJ9hZo71y7NWaTqJU8GPlRrMpI200fFWrWKQg');
+const stripeInstance = stripe(process.env.SECRET_KEY)
 
 // Listen to webhooks from Stripe when important events happen
 export const webhook = async (req, res) => {
   let data;
   let eventType;
   // Check if webhook signing is configured.
-  const webhookSecret = 'whsec_d495d9c747516d907dd287e768d1f227bbd0a4889018befebb2c141e174aafe3';
+  const webhookSecret = process.env.WEBHOOK_SECRET;
 
   if (webhookSecret) {
     // Retrieve the event by verifying the signature using the raw body and secret.
@@ -15,7 +15,7 @@ export const webhook = async (req, res) => {
     let signature = req.headers['stripe-signature'];
 
     try {
-      event = stripe.webhooks.constructEvent(
+      event = stripeInstance.webhooks.constructEvent(
         req.body, 
         signature, 
         webhookSecret

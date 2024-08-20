@@ -6,18 +6,42 @@ const stripeInstance = stripe(process.env.SECRET_KEY);
 
 let users = [];
 
-export const getUsers = (req, res) => {
+export const getUsers = async (req, res) => {
 
   const apiKey = req.query.apiKey;
 
-  res.send(users);
+  if (!apiKey) {
+    res.status(400); // Bad request
+  }
+
+  const hashedAPIKey = hashAPIKey(apiKey)
+
+  const customerId = apiKeys[hashedAPIKey];
+  const customer = customers[customerId];
+
+  if (!customer.active) {
+    res.sendStatus(403); // not authorized
+  } else {
+
+    // Record usage with Stripe Billing
+    const record = await stripeInstance.subscriptionItems.createUsageRecord(
+      customer.itemId,
+      {
+        quantity: 1,
+        timestamp: 'now',
+        action: 'increment',
+      }
+    );
+    res.send(users);
+  }
+
 }
 
 export const createUser = (req, res) => {
   const user = req.body;
-  
-  users.push({ ... user, id: uuidv4() });
-  
+
+  users.push({ ...user, id: uuidv4() });
+
   res.send(`User with the name ${user.firstName} added to the database!`);
 }
 
@@ -43,9 +67,9 @@ export const updateUser = (req, res) => {
 
   const user = users.find((user) => user.id === id);
 
-  if(firstName) user.firstName = firstName;
-  if(lastName) user.lastName = lastName;
-  if(age) user.age = age;
+  if (firstName) user.firstName = firstName;
+  if (lastName) user.lastName = lastName;
+  if (age) user.age = age;
 
   res.send(`User with the id ${id} has been updated`);
 }

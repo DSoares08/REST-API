@@ -16,8 +16,8 @@ export const webhook = async (req, res) => {
 
     try {
       event = stripeInstance.webhooks.constructEvent(
-        req.body, 
-        signature, 
+        req.body,
+        signature,
         webhookSecret
       );
     } catch (err) {
@@ -36,7 +36,23 @@ export const webhook = async (req, res) => {
 
   switch (eventType) {
     case 'checkout.session.completed':
-      console.log(data);
+      // Data included in the event object:
+      const customerId = data.object.customer;
+      const subscriptionId = data.object.subscription;
+
+      console.log(`💰 Customer ${customerId} subscribed to plan ${subscriptionId}`);
+
+      // Get the subscription. The first item is the plan the user subscribed to.
+      const subscription = await stripeInstance.subscriptions.retrieve(subscriptionId);
+      const itemId = subscription.items.data[0].id;
+
+      // Generate API key
+      const { apiKey, hashedAPIKey } = generateAPIKey();
+      console.log(`Generated unique API key: ${apiKey}`);
+
+      // Store the API key in your database.
+      customers[customerId] = { apikey: hashedAPIKey, itemId, active: true };
+      apiKeys[hashedAPIKey] = customerId;
       break;
     case 'invoice.paid':
       break;

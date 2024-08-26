@@ -1,4 +1,5 @@
 import stripe from 'stripe';
+import { apiKeys, customers, generateAPIKey } from '../index.js';
 
 const stripeInstance = stripe(process.env.SECRET_KEY)
 

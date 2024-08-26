@@ -5,11 +5,11 @@ import bodyParser from 'body-parser';
 import usersRoutes from './routes/users.js';
 import checkoutRoute from './routes/checkout.js';
 import webhookRoute from './routes/webhook.js';
-import crypto from 'crypto';
+import { randomBytes, createHash } from 'crypto';
 
 // TODO Implement a real database
 // Reverse mapping of stripe to API key. Model this in your preferred database.
-const customers = {
+export const customers = {
   // stripeCustomerId : data
   stripeCustomerId: {
     apiKey: '123xyz',
@@ -18,15 +18,14 @@ const customers = {
     calls: 0,
   },
 };
-const apiKeys = {
+export const apiKeys = {
   // apiKey : customerdata
   '123xyz': 'cust1',
 };
 
 
 // Recursive function to generate a unique random string as API key
-function generateAPIKey() {
-  const { randomBytes } = require('crypto');
+export function generateAPIKey() {
   const apiKey = randomBytes(16).toString('hex');
   const hashedAPIKey = hashAPIKey(apiKey);
 
@@ -40,8 +39,6 @@ function generateAPIKey() {
 
 // Compare the API key to hashed version in database
 export function hashAPIKey(apiKey) {
-  const { createHash } = crypto;
-
   const hashedAPIKey = createHash('sha256').update(apiKey).digest('hex');
 
   return hashedAPIKey

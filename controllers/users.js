@@ -1,7 +1,8 @@
 import { v4 as uuidv4 } from 'uuid';
 
 import stripe from 'stripe';
-import { hashAPIKey, apiKeys, customers } from '../index.js';
+import { hashAPIKey } from '../index.js';
+import { customers, apiKeys } from './schema'
 
 const stripeInstance = stripe(process.env.SECRET_KEY);
 
@@ -18,7 +19,7 @@ export const getUsers = async (req, res) => {
   const hashedAPIKey = hashAPIKey(apiKey)
 
   const customerId = apiKeys[hashedAPIKey];
-  const customer = customers[customerId];
+  const customer = customers.stripeCustomerId;
 
   if (!customer.active) {
     res.sendStatus(403); // not authorized

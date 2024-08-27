@@ -6,22 +6,7 @@ import usersRoutes from './routes/users.js';
 import checkoutRoute from './routes/checkout.js';
 import webhookRoute from './routes/webhook.js';
 import { randomBytes, createHash } from 'crypto';
-
-// TODO Implement a real database
-// Reverse mapping of stripe to API key. Model this in your preferred database.
-export const customers = {
-  // stripeCustomerId : data
-  stripeCustomerId: {
-    apiKey: '123xyz',
-    active: false,
-    itemId: 'stripeSubscriptionItemId',
-    calls: 0,
-  },
-};
-export const apiKeys = {
-  // apiKey : customerdata
-  '123xyz': 'cust1',
-};
+import { apiKeys } from './schema'
 
 
 // Recursive function to generate a unique random string as API key

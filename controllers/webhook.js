@@ -1,5 +1,6 @@
 import stripe from 'stripe';
-import { apiKeys, customers, generateAPIKey } from '../index.js';
+import { generateAPIKey } from '../index.js';
+import { stripeCustomerId, customers, apiKeys } from './schema'
 
 const stripeInstance = stripe(process.env.SECRET_KEY)
 
@@ -41,7 +42,7 @@ export const webhook = async (req, res) => {
       const customerId = data.object.customer;
       const subscriptionId = data.object.subscription;
 
-      console.log(`💰 Customer ${customerId} subscribed to plan ${subscriptionId}`);
+      console.log(`💰 Customer ${stripeCustomerId.stripeCustomerId} subscribed to plan ${subscriptionId}`);
 
       // Get the subscription. The first item is the plan the user subscribed to.
       const subscription = await stripeInstance.subscriptions.retrieve(subscriptionId);
@@ -52,7 +53,7 @@ export const webhook = async (req, res) => {
       console.log(`Generated unique API key: ${apiKey}`);
 
       // Store the API key in your database.
-      customers[customerId] = { apikey: hashedAPIKey, itemId, active: true };
+      customers.customerId = { apikey: hashedAPIKey, itemId, active: true };
       apiKeys[hashedAPIKey] = customerId;
       break;
     case 'invoice.paid':

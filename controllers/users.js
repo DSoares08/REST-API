@@ -2,7 +2,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 import stripe from 'stripe';
 import { hashAPIKey } from '../index.js';
-import { customers, apiKeys } from './schema'
+import { customers, apiKeys } from '../schema.js'
 
 const stripeInstance = stripe(process.env.SECRET_KEY);
 

@@ -6,7 +6,7 @@ import usersRoutes from './routes/users.js';
 import checkoutRoute from './routes/checkout.js';
 import webhookRoute from './routes/webhook.js';
 import { randomBytes, createHash } from 'crypto';
-import { apiKeys } from './schema'
+import { apiKeys } from './schema.js'
 
 
 // Recursive function to generate a unique random string as API key

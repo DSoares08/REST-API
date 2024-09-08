@@ -1,22 +1,29 @@
-import { boolean } from "drizzle-orm/mysql-core";
-import { pgTable, serial, text, varchar } from "drizzle-orm/pg-core";
+import { pgTable, text, boolean, integer } from 'drizzle-orm/pg-core';
+import { relations } from 'drizzle-orm';
 
+// Table 1: Customers
 export const customers = pgTable('customers', {
-  stripeCustomerId: serial('stripeCustomerId').primaryKey(),
+  stripeCustomerId: text('stripe_customer_id').primaryKey(),
+  apiKey: text('api_key').notNull(),
+  active: boolean('active').default(false),
+  itemId: text('item_id').notNull(),
+  calls: integer('calls').default(0),
 });
 
-export const customersRelations = relations(customers, ({ one }) => ({
-  apiKeys: one(apiKeys, { fields: [customers.stripeCustomerId], references: [apiKeys.apiKey] }),
-  stripeCustomerId: one(stripeCustomerId, { fields: [customers.stripeCustomerId], references: [stripeCustomerId.apiKey, stripeCustomerId.active, stripeCustomerId.itemId, stripeCustomerId.calls] })
+// Table 2: API Keys (Reverse mapping from apiKey to stripeCustomerId)
+export const apiKeys = pgTable('api_keys', {
+  apiKey: text('api_key').primaryKey(),
+  stripeCustomerId: text('stripe_customer_id')
+    .notNull()
+    // Define foreign key directly in the column definition
+    .references(() => customers.stripeCustomerId),
+});
+
+// Defining relations between tables
+export const apiKeyRelations = relations(apiKeys, ({ one }) => ({
+  customer: one(customers, {
+    fields: [apiKeys.stripeCustomerId],
+    references: [customers.stripeCustomerId],
+  }),
 }));
 
-export const apiKeys = pgTable('apiKeys', {
-  apiKey: varchar('apiKey', { length: 256 }).primaryKey(),
-});
-
-export const stripeCustomerId = pgTable('stripeCustomerId', {
-  apiKey: varchar('apiKey', { length: 256 }).primaryKey(),
-  active: boolean('active'),
-  itemId: varchar('itemId', { length: 256 }),
-  calls: number('calls'),
-});

@@ -4,7 +4,7 @@ const stripeInstance = stripe(process.env.SECRET_KEY);
 
 // Create a Stripe Checkout Session to create a customer and subscribe
 export const checkout = async (req, res) => {
-    const session = await stripeInstance.checkout.sessions.create({
+  const session = await stripeInstance.checkout.sessions.create({
     mode: 'subscription',
     payment_method_types: ['card'],
     line_items: [

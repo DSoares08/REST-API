@@ -1,6 +1,7 @@
 import stripe from 'stripe';
 import { generateAPIKey } from '../index.js';
 import { customers, apiKeys } from '../schema.js'
+import { db } from '../db.js';
 
 const stripeInstance = stripe(process.env.SECRET_KEY)
 
@@ -53,9 +54,15 @@ export const webhook = async (req, res) => {
       console.log(`Generated unique API key: ${apiKey}`);
 
       // Store the API key in your database.
-      customers.apiKey = hashedAPIKey;
-      customers.active = true;
-      apiKeys[hashedAPIKey] = customerId;
+      await db.insert(customers).values({
+        stripeCustomerId: customerId,
+        apiKey: hashedAPIKey,
+        active: true,
+      })
+      await db.insert(apiKeys).values({
+        apiKey: hashedAPIKey,
+        stripeCustomerId: customerId,
+      })
       break;
     case 'invoice.paid':
       break;

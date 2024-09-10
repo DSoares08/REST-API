@@ -1,0 +1,1 @@
+ALTER TABLE "customers" ALTER COLUMN "item_id" DROP NOT NULL;

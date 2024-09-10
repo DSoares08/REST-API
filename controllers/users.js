@@ -4,6 +4,7 @@ import stripe from 'stripe';
 import { hashAPIKey } from '../index.js';
 import { customers, apiKeys } from '../schema.js'
 import { db } from '../db.js';
+import { eq } from 'drizzle-orm';
 
 const stripeInstance = stripe(process.env.SECRET_KEY);
 
@@ -19,22 +20,24 @@ export const getUsers = async (req, res) => {
 
   const hashedAPIKey = hashAPIKey(apiKey)
 
-  const customerId = await db.select(apiKeys).where(apiKeys.stripeCustomerId.equals(hashedAPIKey));
-  const customer = await db.select(customers).where(customers.stripeCustomerId.equals(customerId));
+  const customerId = await db.select().from(apiKeys).where(eq(apiKeys.apiKey, hashedAPIKey));
+  console.log(customerId);
+  const customer = await db.select().from(customers).where(eq(customers.apiKey, hashedAPIKey));
+  console.log(customer);
 
-  if (!customer.active) {
+  if (!customer[0].active) {
     res.sendStatus(403); // not authorized
   } else {
 
     // Record usage with Stripe Billing
-    const record = await stripeInstance.subscriptionItems.createUsageRecord(
-      await customer.itemId,
-      {
-        quantity: 1,
-        timestamp: 'now',
-        action: 'increment',
-      }
-    );
+    const meterEvent = await stripeInstance.billing.meterEvents.create({
+      event_name: 'rest-api',
+      payload: {
+        value: '25',
+        stripe_customer_id: customerId[0].stripeCustomerId,
+      },
+      identifier: 'identifier_123',
+    });
     res.send(users);
   }
 

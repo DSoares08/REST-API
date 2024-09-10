@@ -6,7 +6,7 @@ export const customers = pgTable('customers', {
   stripeCustomerId: text('stripe_customer_id').primaryKey(),
   apiKey: text('api_key').notNull(),
   active: boolean('active').default(false),
-  itemId: text('item_id').notNull(),
+  itemId: text('item_id'),
   calls: integer('calls').default(0),
 });
 

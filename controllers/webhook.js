@@ -58,6 +58,7 @@ export const webhook = async (req, res) => {
         stripeCustomerId: customerId,
         apiKey: hashedAPIKey,
         active: true,
+        itemId: itemId,
       })
       await db.insert(apiKeys).values({
         apiKey: hashedAPIKey,

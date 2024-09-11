@@ -21,9 +21,7 @@ export const getUsers = async (req, res) => {
   const hashedAPIKey = hashAPIKey(apiKey)
 
   const customerId = await db.select().from(apiKeys).where(eq(apiKeys.apiKey, hashedAPIKey));
-  console.log(customerId);
   const customer = await db.select().from(customers).where(eq(customers.apiKey, hashedAPIKey));
-  console.log(customer);
 
   if (!customer[0].active) {
     res.sendStatus(403); // not authorized
@@ -31,12 +29,12 @@ export const getUsers = async (req, res) => {
 
     // Record usage with Stripe Billing
     const meterEvent = await stripeInstance.billing.meterEvents.create({
-      event_name: 'rest-api',
+      event_name: 'api_requests',
       payload: {
-        value: '25',
+        value: '1',
         stripe_customer_id: customerId[0].stripeCustomerId,
       },
-      identifier: 'identifier_123',
+      identifier: customerId[0].stripeCustomerId,
     });
     res.send(users);
   }

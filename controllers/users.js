@@ -9,6 +9,7 @@ import { eq } from 'drizzle-orm';
 const stripeInstance = stripe(process.env.SECRET_KEY);
 
 let users = [];
+let cachedCustomer = [];
 
 export const getUsers = async (req, res) => {
 
@@ -21,7 +22,15 @@ export const getUsers = async (req, res) => {
   const hashedAPIKey = hashAPIKey(apiKey)
 
   const customerId = await db.select().from(apiKeys).where(eq(apiKeys.apiKey, hashedAPIKey));
-  const customer = await db.select().from(customers).where(eq(customers.apiKey, hashedAPIKey));
+
+  // Caches the most recent user to avoid unnecessary database queries
+  let customer = users.find(user => user.apiKey === hashedAPIKey);
+  if (!customer) {
+    customer = await db.select().from(customers).where(eq(customers.apiKey, hashedAPIKey));
+    if (customer.length > 0) {
+      cachedCustomer[0] = customer[0];
+    }
+  }
 
   if (!customer[0].active) {
     res.sendStatus(403); // not authorized
@@ -34,7 +43,6 @@ export const getUsers = async (req, res) => {
         value: '1',
         stripe_customer_id: customerId[0].stripeCustomerId,
       },
-      identifier: customerId[0].stripeCustomerId,
     });
     res.send(users);
   }

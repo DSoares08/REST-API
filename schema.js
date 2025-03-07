@@ -7,7 +7,6 @@ export const customers = pgTable('customers', {
   apiKey: text('api_key').notNull(),
   active: boolean('active').default(false),
   itemId: text('item_id'),
-  calls: integer('calls').default(0),
 });
 
 // Table 2: API Keys (Reverse mapping from apiKey to stripeCustomerId)

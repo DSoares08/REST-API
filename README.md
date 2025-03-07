@@ -12,13 +12,13 @@ Secondly, I created functions to generate and hash API keys for customers.
 
 Moving on to arguably the most important step, Stripe integration. I created a webhook to listen to whenever the user makes a request with their API key.
 
-Finally, I implemented a database with help of Drizzle ORM to store the customer information and verify the validity of their API key.
+Finally, I implemented a database with help of Drizzle ORM to store the customer information and verify the validity of their API key. To speed up retrieval of customer data I created a simple cache which stores the most recent customer in a variable.
 
 ## Decisions
 
 A key decision was whether to implement a mock database or an actual database. Since this is a template for larger projects, a database is necessary to deploy an API to the real world.
 
-Another consideration was to cache customer data and make the API request event a background job. This would make response times faster, but it overcomplicates the simple template.
+Another consideration was to cache customer data and make the API request event a background job. I decided to cache a minimal amount of data to keep response times fast. However, background jobs weren't implemented to not overcomplicate the simple template.
 
 ## Summary
 
